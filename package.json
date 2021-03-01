@@ -1,0 +1,18 @@
+{
+  "name": "nodejs-gmp",
+  "version": "0.0.1",
+  "description": "EPAM NodeJS Global Mentoring Program 2021Q1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitbud.epam.com:yahor_sheinikau/nodejs-gmp.git"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "yahor_sheinikau@epam.com",
+  "license": "ISC"
+}
