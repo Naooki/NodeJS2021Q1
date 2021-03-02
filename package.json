@@ -5,7 +5,8 @@
   "main": "index.js",
   "engines": {},
   "scripts": {
-    "task1": "nodemon --config nodemon.json src/index.ts",
+    "task1": "nodemon --config nodemon.json src/hw1/task1.ts",
+    "task2": "nodemon --config nodemon.json src/hw1/task2.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
