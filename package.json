@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "EPAM NodeJS Global Mentoring Program 2021Q1",
   "main": "index.js",
+  "engines": {},
   "scripts": {
+    "task1": "nodemon --config nodemon.json src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -14,5 +16,22 @@
     "nodejs"
   ],
   "author": "yahor_sheinikau@epam.com",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^14.14.31",
+    "husky": "^4.3.8",
+    "lint-staged": "^10.5.4",
+    "nodemon": "^2.0.7",
+    "prettier": "2.2.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js|ts}": "prettier --write"
+  }
 }
