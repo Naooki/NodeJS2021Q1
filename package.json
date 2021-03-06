@@ -6,6 +6,7 @@
   "engines": {},
   "scripts": {
     "task1": "nodemon --config nodemon.json src/hw1/task1.ts",
+    "task2ram": "nodemon --config nodemon.json src/hw1/task2ram.ts",
     "task2": "nodemon --config nodemon.json src/hw1/task2.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
