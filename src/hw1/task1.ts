@@ -6,16 +6,13 @@ class ReverseStream extends Transform {
     encoding: BufferEncoding,
     callback: TransformCallback,
   ) {
-    const reversed = chunk
-      .toString('utf8')
-      .split('')
-      .slice(0, -1) // remove extra new-line
-      .reverse()
-      .join('');
-    callback(null, `${reversed}\n\n`);
+    const bufferReversed = chunk.slice(0, -1).reverse();
+    const newLine = Buffer.from([0x0a, 0x0a]);
+    callback(null, Buffer.concat([bufferReversed, newLine]));
   }
 }
 
 const reverseStream = new ReverseStream();
 
+console.log('Enter any string:\n');
 process.stdin.pipe(reverseStream).pipe(process.stdout);
