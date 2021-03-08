@@ -1,7 +1,7 @@
 import { readdir, readFile, writeFile } from 'fs/promises';
 import { resolve as resolvePath } from 'path';
 
-async function convertFiles(targeDir: string) {
+async function convertFiles(targeDir) {
   const fileNames = await readdir(targeDir).then((fileNames) =>
     fileNames
       .filter((fileName) => fileName.match(/(\.csv)$/))

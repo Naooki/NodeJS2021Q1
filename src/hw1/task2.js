@@ -6,7 +6,7 @@ import { pipeline as pipelineDefault } from 'stream';
 
 const pipeline = promisify(pipelineDefault);
 
-function convertFiles(targeDir: string) {
+function convertFiles(targeDir) {
   return readdir(targeDir)
     .then((fileNames) =>
       fileNames

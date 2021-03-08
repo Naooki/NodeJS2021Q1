@@ -1,11 +1,7 @@
 import { Transform, TransformCallback } from 'stream';
 
 class ReverseStream extends Transform {
-  _transform(
-    chunk: Buffer,
-    encoding: BufferEncoding,
-    callback: TransformCallback,
-  ) {
+  _transform(chunk, encoding, callback) {
     const reversed = chunk
       .toString('utf8')
       .split('')
@@ -18,4 +14,6 @@ class ReverseStream extends Transform {
 
 const reverseStream = new ReverseStream();
 
+
+console.log('Enter any string:\n');
 process.stdin.pipe(reverseStream).pipe(process.stdout);

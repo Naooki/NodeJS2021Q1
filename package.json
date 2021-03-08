@@ -5,9 +5,9 @@
   "main": "index.js",
   "engines": {},
   "scripts": {
-    "task1": "nodemon --config nodemon.json src/hw1/task1.ts",
-    "task2ram": "nodemon --config nodemon.json src/hw1/task2ram.ts",
-    "task2": "nodemon --config nodemon.json src/hw1/task2.ts",
+    "task1": "nodemon --exec babel-node src/hw1/task1.js",
+    "task2ram": "nodemon --exec babel-node src/hw1/task2ram.js",
+    "task2": "nodemon --exec babel-node src/hw1/task2.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,13 +20,13 @@
   "author": "yahor_sheinikau@epam.com",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^14.14.31",
+    "@babel/core": "^7.13.8",
+    "@babel/node": "^7.13.0",
+    "@babel/preset-env": "^7.13.9",
     "husky": "^4.3.8",
     "lint-staged": "^10.5.4",
     "nodemon": "^2.0.7",
-    "prettier": "2.2.1",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.2.2"
+    "prettier": "2.2.1"
   },
   "husky": {
     "hooks": {
