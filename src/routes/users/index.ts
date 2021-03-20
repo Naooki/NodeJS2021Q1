@@ -1,12 +1,19 @@
 import { Router, Request, Response } from 'express';
 import * as faker from 'faker';
+import Ajv from 'ajv';
 
 import { User } from './User';
 import { initMockUsers } from './utils';
+import { createUserSchema, patchUserSchema } from './schemas';
 
 const router = Router();
 
 const usersData = initMockUsers(10);
+
+const ajv = new Ajv();
+
+const createUserValidate = ajv.compile(createUserSchema);
+const patchUserValidate = ajv.compile(patchUserSchema);
 
 router.get('/:id', (req: Request, res: Response) => {
   const { id } = req.params;
@@ -22,34 +29,39 @@ router.get('/:id', (req: Request, res: Response) => {
 });
 
 router.post('/create', (req: Request, res: Response) => {
-  // validate
   const body = req.body;
 
-  const user: User = {
-    id: faker.random.uuid(),
-    isDeleted: false,
-    ...body,
-  };
-
-  usersData.push(user);
-
-  res.status(200);
-  res.json(user);
+  if (createUserValidate(body)) {
+    const user: User = {
+      id: faker.random.uuid(),
+      isDeleted: false,
+      ...body,
+    };
+    usersData.push(user);
+    res.status(200);
+    res.json(user);
+  } else {
+    res.status(400);
+    res.json(createUserValidate.errors);
+  }
 });
 
-router.put('/:id', (req: Request, res: Response) => {
+router.patch('/:id', (req: Request, res: Response) => {
   const { id } = req.params;
   const user = usersData.find((user) => user.id === id);
 
   if (user) {
-    // validate
-    const { login, password, age } = req.body;
-    user.login = login || user.login;
-    user.password = password || user.password;
-    user.age = age || user.age;
-
-    res.status(200);
-    res.json(user);
+    if (patchUserValidate(req.body)) {
+      const { login, password, age } = req.body;
+      user.login = login || user.login;
+      user.password = password || user.password;
+      user.age = age || user.age;
+      res.status(200);
+      res.json(user);
+    } else {
+      res.status(400);
+      res.json(patchUserValidate.errors);
+    }
   } else {
     res.status(404);
     res.json({ path: req.path, message: 'User not found.' });
