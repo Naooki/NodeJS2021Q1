@@ -3,6 +3,7 @@ import { Transform, TransformCallback } from 'stream';
 class ReverseStream extends Transform {
   _transform(
     chunk: Buffer,
+    // eslint-disable-next-line no-undef
     encoding: BufferEncoding,
     callback: TransformCallback,
   ) {

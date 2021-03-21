@@ -9,8 +9,10 @@ app.use(express.json());
 
 const routes: { [key: string]: Router } = {
   '': statusRoutes,
-  'users': usersRoutes,
+  users: usersRoutes,
 };
+
+
 
 Object.keys(routes).forEach((key: string) => {
   app.use(`/${key}`, routes[key]);
