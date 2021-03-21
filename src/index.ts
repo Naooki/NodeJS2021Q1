@@ -12,8 +12,6 @@ const routes: { [key: string]: Router } = {
   users: usersRoutes,
 };
 
-
-
 Object.keys(routes).forEach((key: string) => {
   app.use(`/${key}`, routes[key]);
 });

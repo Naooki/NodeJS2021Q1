@@ -12,6 +12,7 @@
     "prestart": "npm run build",
     "start": "node .",
     "start:dev": "nodemon --config nodemon.json src/index.ts",
+    "eslint": "eslint \"src/**/*.ts\" --cache",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -38,6 +39,7 @@
     "lint-staged": "^10.5.4",
     "nodemon": "^2.0.7",
     "prettier": "2.2.1",
+    "pretty-quick": "^3.1.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.2"
   },
@@ -47,7 +49,10 @@
     }
   },
   "lint-staged": {
-    "*.{js|ts}": "prettier --write"
+    "src/**/*.ts": [
+      "pretty-quick --staged",
+      "npm run eslint"
+    ]
   },
   "dependencies": {
     "ajv": "^7.2.3",
