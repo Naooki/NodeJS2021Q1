@@ -3,6 +3,7 @@ import { readdir } from 'fs/promises';
 import { resolve as resolvePath } from 'path';
 import { promisify } from 'util';
 import { pipeline as pipelineDefault } from 'stream';
+import csvtojson from 'csvtojson';
 
 const pipeline = promisify(pipelineDefault);
 
@@ -17,6 +18,7 @@ function convertFiles(targeDir) {
       fileNames.map((fileName) =>
         pipeline(
           createReadStream(resolvePath(targeDir, `${fileName}.csv`)),
+          csvtojson({ downstreamFormat: 'array' }),
           createWriteStream(resolvePath(targeDir, `${fileName}.txt`)),
         ).catch((err) => console.error(err)),
       ),
