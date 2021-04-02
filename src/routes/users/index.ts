@@ -8,7 +8,7 @@ import { createUserSchema, patchUserSchema } from './schemas';
 
 const router = Router();
 
-const usersData = initMockUsers(10);
+const usersData = initMockUsers(100);
 
 const ajv = new Ajv();
 
@@ -28,10 +28,23 @@ router.get('/:id', (req: Request, res: Response) => {
   }
 });
 
-router.post('/create', (req: Request, res: Response) => {
+router.post('/create', async (req: Request, res: Response) => {
   const body = req.body;
 
   if (createUserValidate(body)) {
+    const userExists = await Promise.resolve(
+      usersData.find((user) => user.login === req.body.login),
+    ).then((user) => !!user);
+
+    if (userExists) {
+      res.status(400);
+      res.json({
+        path: req.path,
+        message: 'User with this login already exists.',
+      });
+      return;
+    }
+
     const user: User = {
       id: faker.random.uuid(),
       isDeleted: false,
@@ -46,12 +59,27 @@ router.post('/create', (req: Request, res: Response) => {
   }
 });
 
-router.patch('/:id', (req: Request, res: Response) => {
+router.patch('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = usersData.find((user) => user.id === id);
 
   if (user) {
     if (patchUserValidate(req.body)) {
+      const userExists = await Promise.resolve(
+        usersData.find(
+          (user) => user.login === req.body.login && user.id !== id,
+        ),
+      ).then((user) => !!user);
+
+      if (userExists) {
+        res.status(400);
+        res.json({
+          path: req.path,
+          message: 'User with this login already exists.',
+        });
+        return;
+      }
+
       const { login, password, age } = req.body;
       user.login = login || user.login;
       user.password = password || user.password;
