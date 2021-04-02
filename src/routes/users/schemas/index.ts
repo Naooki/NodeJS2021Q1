@@ -28,7 +28,7 @@ export const patchUserSchema: JSONSchemaType<Omit<User, 'id' | 'isDeleted'>> = {
       type: 'string',
       minLength: 8,
       maxLength: 64,
-      pattern: '^[a-zA-Z\\d]*$',
+      pattern: '^(?=.*[a-zA-Z])(?=.*[0-9])',
     },
     age: { type: 'number', minimum: 4, maximum: 130 },
   },
