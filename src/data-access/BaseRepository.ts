@@ -1,5 +1,6 @@
-import { DBRead, SearchParams } from 'src/interfaces/DBRead';
+import { DBRead } from 'src/interfaces/DBRead';
 import { DBWrite } from 'src/interfaces/DBWrite';
+import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 
 export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
   protected readonly _collection: any;
@@ -20,7 +21,7 @@ export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
     throw new Error('Method not implemented.');
   }
 
-  async find<K>(param: SearchParams<T, K>): Promise<T[]> {
+  async find<K>(param: ListSearchParams<T, K>): Promise<T[]> {
     throw new Error('Method not implemented.');
   }
 

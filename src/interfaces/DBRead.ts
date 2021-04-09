@@ -1,12 +1,6 @@
-import { FilteredKeyOf } from './FilteredKeyOf';
-
-export interface SearchParams<T, K> {
-  key?: FilteredKeyOf<T, K>;
-  value?: K;
-  limit?: number;
-}
+import { ListSearchParams } from './ListSearchParams';
 
 export interface DBRead<T> {
-  find<K>(params: SearchParams<T, K>): Promise<T[]>;
+  find<K>(params: ListSearchParams<T, K>): Promise<T[]>;
   findOne(param: { [K in keyof T]?: T[K] }): Promise<T>;
 }

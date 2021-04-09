@@ -1,7 +1,7 @@
 import faker from 'faker';
 
 import { BaseRepository } from 'src/data-access/BaseRepository';
-import { SearchParams } from 'src/interfaces/DBRead';
+import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 import { User, UserInputDTO } from 'src/interfaces/User';
 
 export class UserService {
@@ -15,7 +15,7 @@ export class UserService {
     return this.repository.findOne({ login });
   }
 
-  async getUsers({ key, value, limit }: SearchParams<User, string>) {
+  async getUsers({ key, value, limit }: ListSearchParams<User, string>) {
     return this.repository.find({
       key: key || 'login',
       value,

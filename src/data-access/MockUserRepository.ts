@@ -2,7 +2,7 @@ import * as faker from 'faker';
 
 import { BaseRepository } from './BaseRepository';
 import { User } from 'src/interfaces/User';
-import { SearchParams } from 'src/interfaces/DBRead';
+import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 
 export class MockUserRepository extends BaseRepository<User> {
   private _usersData: User[];
@@ -17,7 +17,7 @@ export class MockUserRepository extends BaseRepository<User> {
     return item;
   }
 
-  async find<K>(params: SearchParams<User, K>) {
+  async find<K>(params: ListSearchParams<User, K>) {
     return this.getAutoSuggestUsers<K>(params);
   }
 
@@ -49,7 +49,7 @@ export class MockUserRepository extends BaseRepository<User> {
     key,
     value,
     limit,
-  }: SearchParams<User, K>) {
+  }: ListSearchParams<User, K>) {
     let result = [...this._usersData];
 
     if (key && value) {
