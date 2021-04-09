@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 
-import { User } from 'src/interfaces/User';
+import { User } from 'src/domain/User';
 
 export const createUserSchema: JSONSchemaType<
   Omit<User, 'id' | 'isDeleted'>

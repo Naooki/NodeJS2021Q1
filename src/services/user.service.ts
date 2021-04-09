@@ -1,8 +1,7 @@
-import faker from 'faker';
-
 import { BaseRepository } from 'src/data-access/BaseRepository';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
-import { User, UserInputDTO } from 'src/interfaces/User';
+import { User } from 'src/domain/User';
+import { UserBase } from 'src/domain/UserBase';
 
 export class UserService {
   constructor(private repository: BaseRepository<User>) {}
@@ -23,24 +22,18 @@ export class UserService {
     });
   }
 
-  async createUser(userData: UserInputDTO) {
-    const userExists = await this.getUserByLogin(userData.login).then(
-      (user) => !!user,
-    );
+  async createUser({ login, password, age }: UserBase) {
+    const userExists = await this.getUserByLogin(login).then((user) => !!user);
 
     if (userExists) {
       throw new Error('USER_EXISTS');
     } else {
-      const user: User = {
-        id: faker.random.uuid(),
-        isDeleted: false,
-        ...userData,
-      };
+      const user = new User(login, password, age);
       return this.repository.create(user);
     }
   }
 
-  async updateUser(id: string, userData: UserInputDTO) {
+  async updateUser(id: string, userData: UserBase) {
     const user = await this.getUserById(id);
 
     if (!user) {
@@ -54,15 +47,15 @@ export class UserService {
     if (loginIsTaken) {
       throw new Error('USER_EXISTS');
     }
-
-    return this.repository.update(id, { ...user, ...userData });
+    Object.assign(user, userData);
+    return this.repository.update(id, user);
   }
 
   async deleteUser(id: string) {
     return this.repository.delete(id);
   }
 
-  private async checkLoginIsTakenOnUpdate(id: string, userData: UserInputDTO) {
+  private async checkLoginIsTakenOnUpdate(id: string, userData: UserBase) {
     return this.getUserByLogin(userData.login).then(
       (user) => user && user.id !== id,
     );

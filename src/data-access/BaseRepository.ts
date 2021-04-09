@@ -1,5 +1,5 @@
-import { DBRead } from 'src/interfaces/DBRead';
-import { DBWrite } from 'src/interfaces/DBWrite';
+import { DBRead } from 'src/data-access/DBRead';
+import { DBWrite } from 'src/data-access/DBWrite';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 
 export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {

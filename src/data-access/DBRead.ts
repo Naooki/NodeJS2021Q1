@@ -1,4 +1,4 @@
-import { ListSearchParams } from './ListSearchParams';
+import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 
 export interface DBRead<T> {
   find<K>(params: ListSearchParams<T, K>): Promise<T[]>;

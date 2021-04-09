@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 
 import { BaseRepository } from './BaseRepository';
-import { User } from 'src/interfaces/User';
+import { User } from 'src/domain/User';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 
 export class MockUserRepository extends BaseRepository<User> {
@@ -72,12 +72,15 @@ export class MockUserRepository extends BaseRepository<User> {
   }
 
   private initMockUsers(quantity: number) {
-    return new Array(quantity).fill(null).map(() => ({
-      id: faker.random.uuid(),
-      login: faker.internet.userName(),
-      password: faker.random.alphaNumeric(8),
-      age: faker.random.number({ min: 4, max: 130 }),
-      isDeleted: false,
-    }));
+    return new Array(quantity)
+      .fill(null)
+      .map(
+        () =>
+          new User(
+            faker.internet.userName(),
+            faker.random.alphaNumeric(8),
+            faker.random.number({ min: 4, max: 130 }),
+          ),
+      );
   }
 }

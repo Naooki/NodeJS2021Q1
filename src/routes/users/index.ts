@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 import Ajv from 'ajv';
 
-import { User } from 'src/interfaces/User';
+import { User } from 'src/domain/User';
+import { UserBase } from 'src/domain/UserBase';
 import { UserService } from 'src/services/user.service';
 import { MockUserRepository } from 'src/data-access/MockUserRepository';
-
 import { createUserSchema, patchUserSchema } from './schemas';
 
 const router = Router();
@@ -37,7 +37,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 router.post('/create', async (req: Request, res: Response) => {
-  const userData = req.body;
+  const userData = req.body as UserBase;
 
   if (createUserValidate(userData)) {
     try {
