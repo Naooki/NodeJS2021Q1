@@ -1,58 +1,56 @@
 import { Router, Request, Response } from 'express';
-import * as faker from 'faker';
 import Ajv from 'ajv';
 
-import { User } from './User';
-import { initMockUsers } from './utils';
+import { User } from 'src/interfaces/User';
+import { UserService } from 'src/services/user.service';
+import { MockUserRepository } from 'src/data-access/MockUserRepository';
+
 import { createUserSchema, patchUserSchema } from './schemas';
 
 const router = Router();
 
-const usersData = initMockUsers(100);
+const userRepository = new MockUserRepository();
+const userService = new UserService(userRepository);
 
 const ajv = new Ajv();
-
 const createUserValidate = ajv.compile(createUserSchema);
 const patchUserValidate = ajv.compile(patchUserSchema);
 
-router.get('/:id', (req: Request, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  const user = usersData.find((user) => user.id === id);
+  let user: User;
 
-  if (user) {
-    res.status(200);
-    res.json(user);
-  } else {
-    res.status(404);
+  try {
+    user = await userService.getUserById(id);
+
+    if (user) {
+      res.status(200);
+      res.json(user);
+    } else {
+      res.status(404);
+      res.json({ path: req.path, message: 'User not found.' });
+    }
+  } catch (e) {
+    res.status(400);
     res.json({ path: req.path, message: 'User not found.' });
   }
 });
 
 router.post('/create', async (req: Request, res: Response) => {
-  const body = req.body;
+  const userData = req.body;
 
-  if (createUserValidate(body)) {
-    const userExists = await Promise.resolve(
-      usersData.find((user) => user.login === req.body.login),
-    ).then((user) => !!user);
-
-    if (userExists) {
+  if (createUserValidate(userData)) {
+    try {
+      const user = await userService.createUser(userData);
+      res.status(200);
+      res.json(user);
+    } catch (e) {
       res.status(400);
       res.json({
         path: req.path,
         message: 'User with this login already exists.',
       });
-      return;
     }
-
-    const user: User = {
-      id: faker.random.uuid(),
-      isDeleted: false,
-      ...body,
-    };
-    usersData.push(user);
-    res.status(200);
-    res.json(user);
   } else {
     res.status(400);
     res.json(createUserValidate.errors);
@@ -61,71 +59,62 @@ router.post('/create', async (req: Request, res: Response) => {
 
 router.patch('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  const user = usersData.find((user) => user.id === id);
+  const userData = req.body;
 
-  if (user) {
-    if (patchUserValidate(req.body)) {
-      const userExists = await Promise.resolve(
-        usersData.find(
-          (user) => user.login === req.body.login && user.id !== id,
-        ),
-      ).then((user) => !!user);
-
-      if (userExists) {
-        res.status(400);
-        res.json({
-          path: req.path,
-          message: 'User with this login already exists.',
-        });
-        return;
-      }
-
-      const { login, password, age } = req.body;
-      user.login = login || user.login;
-      user.password = password || user.password;
-      user.age = age || user.age;
+  if (patchUserValidate(req.body)) {
+    try {
+      const user = await userService.updateUser(id, userData);
       res.status(200);
       res.json(user);
-    } else {
-      res.status(400);
-      res.json(patchUserValidate.errors);
+    } catch (e) {
+      switch (e.type) {
+        case 'NOT_FOUND':
+          res.status(404);
+          res.json({ path: req.path, message: 'User not found.' });
+          break;
+        case 'USER_EXISTS':
+          res.status(400);
+          res.json({
+            path: req.path,
+            message: 'User with this login already exists.',
+          });
+          break;
+      }
     }
   } else {
-    res.status(404);
-    res.json({ path: req.path, message: 'User not found.' });
+    res.status(400);
+    res.json(patchUserValidate.errors);
   }
 });
 
-router.delete('/:id', (req: Request, res: Response) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  const user = usersData.find((user) => user.id === id);
-
-  if (user) {
-    user.isDeleted = true;
+  try {
+    await userService.deleteUser(id);
     res.status(200);
-    res.json(user);
-  } else {
-    res.status(404);
-    res.json({ path: req.path, message: 'User not found.' });
+    res.json({
+      statusCode: 200,
+    });
+  } catch (e) {
+    res.status(400);
+    res.json({ path: req.path, message: 'Something went wrong' });
   }
 });
 
-router.get('/', (req: Request, res: Response) => {
-  const { loginSubstring = '', limit = 99 } = req.query;
-  const result = getAutoSuggestUsers(loginSubstring as string, limit as number);
-  res.status(200);
-  res.json(result);
-});
+router.get('/', async (req: Request, res: Response) => {
+  const params: { value?: string; limit?: number } = {
+    value: req.query.loginSubstring as string,
+    limit: +(req.query.limit as string),
+  };
 
-function getAutoSuggestUsers(loginSubstring: string, limit: number) {
-  let result = [...usersData];
-
-  if (loginSubstring) {
-    result = result.filter((user) => user.login.includes(loginSubstring));
+  try {
+    const result = await userService.getUsers(params);
+    res.status(200);
+    res.json(result);
+  } catch (e) {
+    res.status(400);
+    res.json({ path: req.path, message: 'Something went wrong' });
   }
-  result = result.sort((a, b) => (a.login < b.login ? -1 : 1)).slice(0, +limit);
-
-  return result;
-}
+});
 
 export { router as usersRoutes };
