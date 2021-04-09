@@ -2,15 +2,12 @@
   "name": "nodejs-gmp",
   "version": "0.0.1",
   "description": "EPAM NodeJS Global Mentoring Program 2021Q1",
-  "main": "dist/index.js",
   "engines": {},
   "scripts": {
     "task1": "nodemon --config nodemon.json src/hw1/task1.ts",
     "task2ram": "nodemon --config nodemon.json src/hw1/task2ram.ts",
     "task2": "nodemon --config nodemon.json src/hw1/task2.ts",
-    "build": "tsc",
-    "prestart": "npm run build",
-    "start": "node .",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "start:dev": "nodemon --config nodemon.json src/index.ts",
     "eslint": "eslint \"src/**/*.ts\" --cache",
     "test": "echo \"Error: no test specified\" && exit 1"
