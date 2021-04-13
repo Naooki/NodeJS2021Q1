@@ -9,6 +9,7 @@
     "task2": "nodemon --config nodemon.json src/hw1/task2.ts",
     "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "start:dev": "nodemon --config nodemon.json src/index.ts",
+    "init:data": "ts-node -r tsconfig-paths/register src/init-data.ts",
     "eslint": "eslint \"src/**/*.ts\" --cache",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -54,6 +55,8 @@
   "dependencies": {
     "ajv": "^7.2.3",
     "express": "^4.17.1",
-    "faker": "^5.4.0"
+    "faker": "^5.4.0",
+    "pg": "^8.5.1",
+    "sequelize": "^6.6.2"
   }
 }

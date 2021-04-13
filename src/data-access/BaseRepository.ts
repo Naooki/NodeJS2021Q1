@@ -3,17 +3,11 @@ import { DBWrite } from 'src/data-access/DBWrite';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 
 export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
-  protected readonly _collection: any;
-
-  constructor(db: any, collectionName: string) {
-    this._collection = db.collection(collectionName);
-  }
-
-  async create(item: T): Promise<T> {
+  async create(item: T, ...params: any): Promise<any> {
     throw new Error('Method not implemented.');
   }
 
-  async update(id: string, item: T): Promise<T | null> {
+  async update(id: string, item: T): Promise<any> {
     throw new Error('Method not implemented.');
   }
 
@@ -21,11 +15,11 @@ export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
     throw new Error('Method not implemented.');
   }
 
-  async find<K>(param: ListSearchParams<T, K>): Promise<T[]> {
+  async find<K>(param: ListSearchParams<T, K>): Promise<any> {
     throw new Error('Method not implemented.');
   }
 
-  async findOne(param: { [K in keyof T]?: T[K] }): Promise<T> {
+  async findOne(param: { [K in keyof T]?: T[K] }): Promise<any> {
     throw new Error('Method not implemented.');
   }
 }

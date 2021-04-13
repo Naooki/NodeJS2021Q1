@@ -1,16 +1,12 @@
 import { Router, Request, Response } from 'express';
 import Ajv from 'ajv';
 
-import { User } from 'src/domain/User';
-import { UserBase } from 'src/domain/UserBase';
+import { UserAttributes, UserCreationAttributes } from 'src/models/User';
 import { UserService } from 'src/services/user.service';
-import { MockUserRepository } from 'src/data-access/MockUserRepository';
 import { createUserSchema, patchUserSchema } from './schemas';
 
 const router = Router();
-
-const userRepository = new MockUserRepository();
-const userService = new UserService(userRepository);
+const userService = new UserService(null as any);
 
 const ajv = new Ajv();
 const createUserValidate = ajv.compile(createUserSchema);
@@ -18,7 +14,7 @@ const patchUserValidate = ajv.compile(patchUserSchema);
 
 router.get('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  let user: User;
+  let user: UserAttributes;
 
   try {
     user = await userService.getUserById(id);
@@ -37,7 +33,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 router.post('/create', async (req: Request, res: Response) => {
-  const userData = req.body as UserBase;
+  const userData = req.body as UserCreationAttributes;
 
   if (createUserValidate(userData)) {
     try {

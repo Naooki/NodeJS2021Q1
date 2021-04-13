@@ -8,7 +8,7 @@ export class MockUserRepository extends BaseRepository<User> {
   private _usersData: User[];
 
   constructor() {
-    super({ collection: () => {} }, 'mock-users');
+    super();
     this._usersData = this.initMockUsers(100);
   }
 
