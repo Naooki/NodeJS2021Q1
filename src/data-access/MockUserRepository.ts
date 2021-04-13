@@ -1,33 +1,29 @@
-import * as faker from 'faker';
-
 import { BaseRepository } from './BaseRepository';
-import { User } from 'src/domain/User';
-import { ListSearchParams } from 'src/interfaces/ListSearchParams';
+import { UserCreationAttributes, UserAttributes } from '../models/User';
+import { ListSearchParams } from '../interfaces/ListSearchParams';
 
-export class MockUserRepository extends BaseRepository<User> {
-  private _usersData: User[];
+export class MockUserRepository extends BaseRepository<UserAttributes> {
+  private _usersData: UserAttributes[] = [];
 
-  constructor() {
-    super();
-    this._usersData = this.initMockUsers(100);
+  async create(item: UserCreationAttributes) {
+    const user = { ...item, isDeleted: false };
+    this._usersData.push(user);
+    return user;
   }
 
-  async create(item: User) {
-    this._usersData.push(item);
-    return item;
-  }
-
-  async find<K>(params: ListSearchParams<User, K>) {
+  async find<K>(
+    params: ListSearchParams<UserAttributes, K>,
+  ): Promise<UserAttributes[]> {
     return this.getAutoSuggestUsers<K>(params);
   }
 
   async findOne({ id, login }: { id?: string; login?: string }) {
     return this._usersData.find(
       (user) => user.id === id || user.login === login,
-    ) as User;
+    ) as UserAttributes;
   }
 
-  async update(id: string, item: User) {
+  async update(id: string, item: UserCreationAttributes) {
     const user = this._usersData.find((user) => user.id === id);
     if (user) {
       Object.assign(user, item);
@@ -49,7 +45,7 @@ export class MockUserRepository extends BaseRepository<User> {
     key,
     value,
     limit,
-  }: ListSearchParams<User, K>) {
+  }: ListSearchParams<UserAttributes, K>) {
     let result = [...this._usersData];
 
     if (key && value) {
@@ -71,16 +67,11 @@ export class MockUserRepository extends BaseRepository<User> {
     return result;
   }
 
-  private initMockUsers(quantity: number) {
-    return new Array(quantity)
-      .fill(null)
-      .map(
-        () =>
-          new User(
-            faker.internet.userName(),
-            faker.random.alphaNumeric(8),
-            faker.random.number({ min: 4, max: 130 }),
-          ),
-      );
+  createMany(usersData: UserCreationAttributes[]): Promise<UserAttributes[]> {
+    this._usersData = usersData.map((userData) => ({
+      ...userData,
+      isDeleted: false,
+    }));
+    return Promise.resolve(this._usersData);
   }
 }

@@ -8,8 +8,9 @@ export interface UserAttributes {
   isDeleted: boolean;
 }
 
+// TODO: Delegate ID generation logic to the Data Source
 export interface UserCreationAttributes
-  extends Optional<UserAttributes, 'id' | 'isDeleted'> {}
+  extends Optional<UserAttributes, 'isDeleted'> {}
 
 export class User extends Model<UserAttributes, UserCreationAttributes> {}
 

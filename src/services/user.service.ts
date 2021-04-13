@@ -1,10 +1,10 @@
 import faker from 'faker';
-import { UserRepository } from 'src/data-access/UserRepository';
+import { BaseRepository } from 'src/data-access/BaseRepository';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
-import { User, UserAttributes, UserCreationAttributes } from 'src/models/User';
+import { UserAttributes, UserCreationAttributes } from 'src/models/User';
 
 export class UserService {
-  constructor(private repository: UserRepository) {}
+  constructor(private repository: BaseRepository<UserAttributes>) {}
 
   async getUserById(id: string) {
     return this.repository.findOne({ id });
@@ -32,8 +32,8 @@ export class UserService {
     if (userExists) {
       throw new Error('USER_EXISTS');
     } else {
-      const user = new User({ login, password, age });
-      return this.repository.create(user.get());
+      const id = faker.random.uuid();
+      return this.repository.create({ id, login, password, age });
     }
   }
 
@@ -69,7 +69,7 @@ export class UserService {
           age: faker.random.number({ min: 4, max: 130 }),
         } as UserCreationAttributes),
     );
-    return this.repository.createInTransaction(usersData);
+    return this.repository.createMany(usersData);
   }
 
   private async checkLoginIsTakenOnUpdate(

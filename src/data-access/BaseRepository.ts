@@ -3,7 +3,11 @@ import { DBWrite } from 'src/data-access/DBWrite';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 
 export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
-  async create(item: T, ...params: any): Promise<any> {
+  async create(item: Partial<T>, ...params: any): Promise<T> {
+    throw new Error('Method not implemented.');
+  }
+
+  async createMany(item: Partial<T>[]): Promise<T[]> {
     throw new Error('Method not implemented.');
   }
 
