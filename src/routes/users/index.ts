@@ -1,12 +1,30 @@
+import { Sequelize } from 'sequelize';
 import { Router, Request, Response } from 'express';
 import Ajv from 'ajv';
 
-import { UserAttributes, UserCreationAttributes } from 'src/models/User';
+import {
+  InitUserModel,
+  UserAttributes,
+  UserCreationAttributes,
+} from 'src/models/User';
 import { UserService } from 'src/services/user.service';
 import { createUserSchema, patchUserSchema } from './schemas';
 
+import { MockUserRepository } from 'src/data-access/MockUserRepository';
+import { UserRepository } from 'src/data-access/UserRepository';
+
 const router = Router();
-const userService = new UserService(null as any);
+
+const sequelize = new Sequelize('CONNECTION_STRING', { pool: { max: 3 } });
+InitUserModel(sequelize);
+
+sequelize.sync();
+
+const userRepo = process.env.MOCK_USERS_DB
+  ? new MockUserRepository()
+  : new UserRepository(sequelize);
+
+const userService = new UserService(userRepo);
 
 const ajv = new Ajv();
 const createUserValidate = ajv.compile(createUserSchema);
@@ -108,7 +126,8 @@ router.get('/', async (req: Request, res: Response) => {
     res.status(200);
     res.json(result);
   } catch (e) {
-    res.status(400);
+    console.log(e);
+    res.status(500);
     res.json({ path: req.path, message: 'Something went wrong' });
   }
 });

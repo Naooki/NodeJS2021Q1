@@ -1,9 +1,9 @@
 import { JSONSchemaType } from 'ajv';
 
-import { User } from 'src/domain/User';
+import { UserAttributes } from 'src/models/User';
 
 export const createUserSchema: JSONSchemaType<
-  Omit<User, 'id' | 'isDeleted'>
+  Omit<UserAttributes, 'id' | 'isDeleted'>
 > = {
   type: 'object',
   properties: {
@@ -20,7 +20,9 @@ export const createUserSchema: JSONSchemaType<
   additionalProperties: false,
 };
 
-export const patchUserSchema: JSONSchemaType<Omit<User, 'id' | 'isDeleted'>> = {
+export const patchUserSchema: JSONSchemaType<
+  Omit<UserAttributes, 'id' | 'isDeleted'>
+> = {
   type: 'object',
   properties: {
     login: { type: 'string' },
