@@ -29,7 +29,7 @@ export class MockUserRepository extends BaseRepository<UserAttributes> {
       Object.assign(user, item);
       return user;
     }
-    return null;
+    throw new Error('NOT_FOUND');
   }
 
   async delete(id: string) {

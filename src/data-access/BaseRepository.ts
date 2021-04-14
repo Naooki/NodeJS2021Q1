@@ -11,7 +11,7 @@ export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
     throw new Error('Method not implemented.');
   }
 
-  async update(id: string, item: T): Promise<any> {
+  async update(id: string, item: Partial<T>): Promise<T> {
     throw new Error('Method not implemented.');
   }
 
@@ -19,11 +19,11 @@ export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
     throw new Error('Method not implemented.');
   }
 
-  async find<K>(param: ListSearchParams<T, K>): Promise<any> {
+  async find<K>(param: ListSearchParams<T, K>): Promise<T[]> {
     throw new Error('Method not implemented.');
   }
 
-  async findOne(param: { [K in keyof T]?: T[K] }): Promise<any> {
+  async findOne(param: { [K in keyof T]?: T[K] }): Promise<T | null> {
     throw new Error('Method not implemented.');
   }
 }

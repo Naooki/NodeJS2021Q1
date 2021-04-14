@@ -21,7 +21,10 @@ export const InitUserModel = (sequelize: Sequelize) =>
         type: DataTypes.UUID,
         primaryKey: true,
       },
-      login: DataTypes.TEXT,
+      login: {
+        type: DataTypes.TEXT,
+        unique: true,
+      },
       password: DataTypes.TEXT,
       age: DataTypes.INTEGER,
       isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },

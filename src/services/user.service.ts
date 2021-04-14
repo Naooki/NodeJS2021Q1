@@ -27,32 +27,12 @@ export class UserService {
   }
 
   async createUser({ login, password, age }: UserCreationAttributes) {
-    const userExists = await this.getUserByLogin(login).then((user) => !!user);
-
-    if (userExists) {
-      throw new Error('USER_EXISTS');
-    } else {
-      const id = faker.random.uuid();
-      return this.repository.create({ id, login, password, age });
-    }
+    const id = faker.random.uuid();
+    return this.repository.create({ id, login, password, age });
   }
 
   async updateUser(id: string, userData: UserCreationAttributes) {
-    const user = await this.getUserById(id);
-
-    if (!user) {
-      throw new Error('NOT_FOUND');
-    }
-
-    const loginIsTaken = userData.login
-      ? await this.checkLoginIsTakenOnUpdate(id, userData)
-      : await Promise.resolve(false);
-
-    if (loginIsTaken) {
-      throw new Error('USER_EXISTS');
-    }
-    Object.assign(user, userData);
-    return this.repository.update(id, user);
+    return this.repository.update(id, userData);
   }
 
   async deleteUser(id: string) {
@@ -70,14 +50,5 @@ export class UserService {
         } as UserCreationAttributes),
     );
     return this.repository.createMany(usersData);
-  }
-
-  private async checkLoginIsTakenOnUpdate(
-    id: string,
-    userData: UserCreationAttributes,
-  ) {
-    return this.getUserByLogin(userData.login).then(
-      (user) => user && user.id !== id,
-    );
   }
 }

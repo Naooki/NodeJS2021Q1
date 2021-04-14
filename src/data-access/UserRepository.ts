@@ -10,7 +10,14 @@ export class UserRepository extends BaseRepository<UserAttributes> {
   }
 
   async create(item: UserCreationAttributes, transaction?: Transaction) {
-    return User.create(item, { transaction }).then((user) => user.get());
+    return User.create(item, { transaction })
+      .then((user) => user.get())
+      .catch((e) => {
+        if (e.name === 'SequelizeUniqueConstraintError') {
+          throw new Error('USER_EXISTS');
+        }
+        throw e;
+      });
   }
 
   async findOne({ id, login }: Partial<Pick<UserAttributes, 'id' | 'login'>>) {
@@ -36,6 +43,31 @@ export class UserRepository extends BaseRepository<UserAttributes> {
     params: ListSearchParams<UserAttributes, K>,
   ): Promise<UserAttributes[]> {
     return this.getAutoSuggestUsers<K>(params);
+  }
+
+  async update(id: string, item: UserCreationAttributes) {
+    return this.dbConn.transaction(async (transaction) => {
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        throw new Error('NOT_FOUND');
+      }
+
+      return user
+        .update(item)
+        .then((user) => user.get())
+        .catch((e) => {
+          if (e.name === 'SequelizeUniqueConstraintError') {
+            throw new Error('USER_EXISTS');
+          }
+          throw e;
+        });
+    });
+  }
+
+  async delete(id: string) {
+    // TODO: Soft delete?
+    return User.destroy({ where: { id } }).then((n) => !!n);
   }
 
   private async getAutoSuggestUsers<K>({
