@@ -1,11 +1,14 @@
+import { inject, injectable } from 'inversify';
 import { Op, Order, Sequelize, Transaction, WhereOptions } from 'sequelize';
-import { ListSearchParams } from '../interfaces/ListSearchParams';
 
-import { User, UserCreationAttributes, UserAttributes } from '../models/User';
+import { TOKENS } from 'src/infrastructure/tokens';
+import { ListSearchParams } from 'src/interfaces/ListSearchParams';
+import { User, UserCreationAttributes, UserAttributes } from 'src/models/User';
 import { BaseRepository } from './BaseRepository';
 
+@injectable()
 export class UserRepository extends BaseRepository<UserAttributes> {
-  constructor(private dbConn: Sequelize) {
+  constructor(@inject(TOKENS.Persistence) private dbConn: Sequelize) {
     super();
   }
 
