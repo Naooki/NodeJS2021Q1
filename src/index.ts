@@ -1,19 +1,16 @@
-import express, { Router } from 'express';
+import 'reflect-metadata';
+import { InversifyExpressServer } from 'inversify-express-utils';
+import express from 'express';
 
-import { statusRoutes } from './routes/status';
-import { usersRoutes } from './routes/users';
+import { initContainer } from './infrastructure/inversify.config';
+import './routes/status';
+import './routes/user';
 
-const app = express();
+initContainer().then((container) => {
+  const server = new InversifyExpressServer(container);
 
-app.use(express.json());
-
-const routes: { [key: string]: Router } = {
-  '': statusRoutes,
-  users: usersRoutes,
-};
-
-Object.keys(routes).forEach((key: string) => {
-  app.use(`/${key}`, routes[key]);
+  server
+    .setConfig((app) => app.use(express.json()))
+    .build()
+    .listen(3000, () => console.log('Server is listening on port 3000!'));
 });
-
-app.listen(3000, () => console.log('Server is listening on port 3000!'));

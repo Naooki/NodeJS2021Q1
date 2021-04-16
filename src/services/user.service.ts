@@ -1,10 +1,17 @@
+import { inject, injectable } from 'inversify';
 import faker from 'faker';
+
+import { TOKENS } from 'src/infrastructure/tokens';
 import { BaseRepository } from 'src/data-access/BaseRepository';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 import { UserAttributes, UserCreationAttributes } from 'src/models/User';
 
+@injectable()
 export class UserService {
-  constructor(private repository: BaseRepository<UserAttributes>) {}
+  constructor(
+    @inject(TOKENS.UserRepository)
+    private repository: BaseRepository<UserAttributes>,
+  ) {}
 
   async getUserById(id: string) {
     return this.repository.findOne({ id });
