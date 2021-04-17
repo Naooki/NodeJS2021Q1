@@ -7,16 +7,12 @@ import {
   httpPost,
 } from 'inversify-express-utils';
 import { Request, Response } from 'express';
-import Ajv from 'ajv';
 
 import { TOKENS } from 'src/infrastructure/tokens';
 import { UserCreationAttributes } from 'src/models/User';
 import { UserService } from 'src/services/user.service';
+import { AjvValidatMiddleware } from 'src/middlewares/ajv-validate.middleware';
 import { createUserSchema, patchUserSchema } from './schemas';
-
-const ajv = new Ajv();
-const createUserValidate = ajv.compile(createUserSchema);
-const patchUserValidate = ajv.compile(patchUserSchema);
 
 @controller('/user')
 export class UserController {
@@ -34,7 +30,6 @@ export class UserController {
       res.status(200);
       res.json(result);
     } catch (e) {
-      console.log(e);
       res.status(500);
       res.json({ path: req.path, message: 'Something went wrong' });
     }
@@ -59,64 +54,54 @@ export class UserController {
     }
   }
 
-  @httpPost('/create')
+  @httpPost('/create', AjvValidatMiddleware.getMiddleware(createUserSchema))
   async createUser(req: Request, res: Response) {
     const userData = req.body as UserCreationAttributes;
 
-    if (createUserValidate(userData)) {
-      try {
-        const user = await this.userService.createUser(userData);
-        res.status(200);
-        res.json(user);
-      } catch (e) {
-        if (e.message === 'USER_EXISTS') {
+    try {
+      const user = await this.userService.createUser(userData);
+      res.status(200);
+      res.json(user);
+    } catch (e) {
+      if (e.message === 'USER_EXISTS') {
+        res.status(400);
+        res.json({
+          path: req.path,
+          message: 'User with this login already exists.',
+        });
+        return;
+      }
+      res.status(500);
+      res.json({ path: req.path, message: 'Something went wrong' });
+    }
+  }
+
+  @httpPatch('/:id', AjvValidatMiddleware.getMiddleware(patchUserSchema))
+  async patchUser(req: Request, res: Response) {
+    const { id } = req.params;
+    const userData = req.body;
+
+    try {
+      const user = await this.userService.updateUser(id, userData);
+      res.status(200);
+      res.json(user);
+    } catch (e) {
+      switch (e.message) {
+        case 'NOT_FOUND':
+          res.status(404);
+          res.json({ path: req.path, message: 'User not found.' });
+          break;
+        case 'USER_EXISTS':
           res.status(400);
           res.json({
             path: req.path,
             message: 'User with this login already exists.',
           });
-          return;
-        }
-        res.status(500);
-        res.json({ path: req.path, message: 'Something went wrong' });
+          break;
+        default:
+          res.status(500);
+          res.json({ path: req.path, message: 'Something went wrong' });
       }
-    } else {
-      res.status(400);
-      res.json(createUserValidate.errors);
-    }
-  }
-
-  @httpPatch('/:id')
-  async patchUser(req: Request, res: Response) {
-    const { id } = req.params;
-    const userData = req.body;
-
-    if (patchUserValidate(req.body)) {
-      try {
-        const user = await this.userService.updateUser(id, userData);
-        res.status(200);
-        res.json(user);
-      } catch (e) {
-        switch (e.message) {
-          case 'NOT_FOUND':
-            res.status(404);
-            res.json({ path: req.path, message: 'User not found.' });
-            break;
-          case 'USER_EXISTS':
-            res.status(400);
-            res.json({
-              path: req.path,
-              message: 'User with this login already exists.',
-            });
-            break;
-          default:
-            res.status(500);
-            res.json({ path: req.path, message: 'Something went wrong' });
-        }
-      }
-    } else {
-      res.status(400);
-      res.json(patchUserValidate.errors);
     }
   }
 

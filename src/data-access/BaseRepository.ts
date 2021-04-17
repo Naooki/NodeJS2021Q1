@@ -1,9 +1,7 @@
-import { injectable } from 'inversify';
 import { DBRead } from 'src/data-access/DBRead';
 import { DBWrite } from 'src/data-access/DBWrite';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 
-@injectable()
 export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
   async create(item: Partial<T>, ...params: any): Promise<T> {
     throw new Error('Method not implemented.');
