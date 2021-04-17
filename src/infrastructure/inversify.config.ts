@@ -8,11 +8,13 @@ import { MockUserRepository } from 'src/data-access/MockUserRepository';
 import { UserRepository } from 'src/data-access/UserRepository';
 import { PersistenceManager } from 'src/persistence';
 
-export async function initContainer() {
+export async function initContainer(persistanceConnectForce?: boolean) {
   const container = new Container();
 
-  const persistance = new PersistenceManager();
-  const conn = await persistance.connect();
+  container.bind(PersistenceManager).toSelf().inSingletonScope();
+
+  const persistance = container.get(PersistenceManager);
+  const conn = await persistance.connect(persistanceConnectForce);
 
   container.bind(TOKENS.Persistence).toConstantValue(conn);
   container.bind<UserService>(TOKENS.UserService).to(UserService);

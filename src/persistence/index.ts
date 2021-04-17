@@ -7,11 +7,11 @@ import { InitUserModel } from '../models/User';
 export class PersistenceManager {
   private _conn?: Sequelize;
 
-  async connect() {
+  async connect(force?: boolean) {
     // TODO: CONFIG + LOG
     const sequelize = new Sequelize('CONNECTION_STRING', { pool: { max: 3 } });
     InitUserModel(sequelize);
-    this._conn = await sequelize.sync();
+    this._conn = await sequelize.sync({ force });
     return this._conn;
   }
 
