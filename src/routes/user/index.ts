@@ -115,6 +115,11 @@ export class UserController {
         statusCode: 200,
       });
     } catch (e) {
+      if (e.message === 'NOT_FOUND') {
+        res.status(404);
+        res.json({ path: req.path, message: 'User not found.' });
+        return;
+      }
       res.status(500);
       res.json({ path: req.path, message: 'Something went wrong' });
     }

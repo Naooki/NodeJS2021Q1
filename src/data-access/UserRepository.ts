@@ -69,8 +69,15 @@ export class UserRepository extends BaseRepository<UserAttributes> {
   }
 
   async delete(id: string) {
-    // TODO: Soft delete?
-    return User.destroy({ where: { id } }).then((n) => !!n);
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      throw new Error('NOT_FOUND');
+    }
+
+    return user
+      .update({ isDeleted: true })
+      .then((user) => !user.get().isDeleted);
   }
 
   private async getAutoSuggestUsers<K>({
