@@ -9,7 +9,9 @@ export class PersistenceManager {
 
   async connect(force?: boolean) {
     // TODO: CONFIG + LOG
-    const sequelize = new Sequelize('CONNECTION_STRING', { pool: { max: 3 } });
+    const sequelize = new Sequelize(process.env.PG_CONN_STR as string, {
+      pool: { max: 3 },
+    });
     InitUserModel(sequelize);
     this._conn = await sequelize.sync({ force });
     return this._conn;
