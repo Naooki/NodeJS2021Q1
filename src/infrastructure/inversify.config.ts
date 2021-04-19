@@ -2,8 +2,8 @@ import { Container } from 'inversify';
 
 import { TOKENS } from './tokens';
 import { UserService } from 'src/services/user.service';
-import { MockUserRepository } from 'src/data-access/MockUserRepository';
-import { UserRepository } from 'src/data-access/UserRepository';
+import { MockUserRepository } from 'src/data-access/mock-user.repository';
+import { UserRepository } from 'src/data-access/user.repository';
 import { PersistenceManager } from 'src/persistence';
 import { ValidationErrorMiddleware } from 'src/middlewares/validation-errors.middleware';
 

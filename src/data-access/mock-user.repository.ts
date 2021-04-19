@@ -1,4 +1,4 @@
-import { BaseRepository } from './BaseRepository';
+import { BaseRepository } from './base.repository';
 import { UserCreationAttributes, UserAttributes } from '../models/User';
 import { ListSearchParams } from '../interfaces/ListSearchParams';
 

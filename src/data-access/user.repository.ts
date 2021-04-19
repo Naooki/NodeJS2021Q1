@@ -4,7 +4,7 @@ import { Op, Order, Sequelize, Transaction, WhereOptions } from 'sequelize';
 import { TOKENS } from 'src/infrastructure/tokens';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 import { User, UserCreationAttributes, UserAttributes } from 'src/models/User';
-import { BaseRepository } from './BaseRepository';
+import { BaseRepository } from './base.repository';
 
 @injectable()
 export class UserRepository extends BaseRepository<UserAttributes> {

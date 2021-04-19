@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import faker from 'faker';
 
 import { TOKENS } from 'src/infrastructure/tokens';
-import { BaseRepository } from 'src/data-access/BaseRepository';
+import { BaseRepository } from 'src/data-access/base.repository';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 import { UserAttributes, UserCreationAttributes } from 'src/models/User';
 
