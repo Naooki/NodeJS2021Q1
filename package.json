@@ -2,16 +2,14 @@
   "name": "nodejs-gmp",
   "version": "0.0.1",
   "description": "EPAM NodeJS Global Mentoring Program 2021Q1",
-  "main": "dist/index.js",
   "engines": {},
   "scripts": {
     "task1": "nodemon --config nodemon.json src/hw1/task1.ts",
     "task2ram": "nodemon --config nodemon.json src/hw1/task2ram.ts",
     "task2": "nodemon --config nodemon.json src/hw1/task2.ts",
-    "build": "tsc",
-    "prestart": "npm run build",
-    "start": "node .",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "start:dev": "nodemon --config nodemon.json src/index.ts",
+    "init:data": "ts-node -r tsconfig-paths/register src/init-data.ts",
     "eslint": "eslint \"src/**/*.ts\" --cache",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -57,6 +55,11 @@
   "dependencies": {
     "ajv": "^7.2.3",
     "express": "^4.17.1",
-    "faker": "^5.4.0"
+    "faker": "^5.4.0",
+    "inversify": "^5.0.5",
+    "inversify-express-utils": "^6.3.2",
+    "pg": "^8.5.1",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.6.2"
   }
 }
