@@ -21,7 +21,7 @@ export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
     throw new Error('Method not implemented.');
   }
 
-  async find<K>(param: ListSearchParams<T, K>): Promise<T[]> {
+  async find<K>(param?: ListSearchParams<T, K>): Promise<T[]> {
     throw new Error('Method not implemented.');
   }
 

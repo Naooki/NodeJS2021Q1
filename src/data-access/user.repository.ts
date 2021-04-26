@@ -56,7 +56,7 @@ export class UserRepository extends BaseRepository<UserAttributes> {
       throw new Error('NO_CONNECTION');
     }
     return this.Model.sequelize.transaction(async () => {
-      const user = await User.findByPk(id);
+      const user = await this.Model.findByPk(id);
 
       if (!user) {
         throw new Error('NOT_FOUND');
@@ -75,7 +75,7 @@ export class UserRepository extends BaseRepository<UserAttributes> {
   }
 
   async delete(id: string) {
-    const user = await User.findByPk(id);
+    const user = await this.Model.findByPk(id);
 
     if (!user) {
       throw new Error('NOT_FOUND');
@@ -106,7 +106,7 @@ export class UserRepository extends BaseRepository<UserAttributes> {
       }
     }
 
-    return User.findAll({ where, order, limit }).then((users) =>
+    return this.Model.findAll({ where, order, limit }).then((users) =>
       users.map((user) => user.get()),
     );
   }
