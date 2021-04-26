@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { Op, Order, Sequelize, Transaction, WhereOptions } from 'sequelize';
+import { Op, Order, Transaction, WhereOptions } from 'sequelize';
 
 import { TOKENS } from 'src/infrastructure/tokens';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
@@ -8,12 +8,12 @@ import { BaseRepository } from './base.repository';
 
 @injectable()
 export class UserRepository extends BaseRepository<UserAttributes> {
-  constructor(@inject(TOKENS.Persistence) private dbConn: Sequelize) {
+  constructor(@inject(TOKENS.UserModel) private Model: typeof User) {
     super();
   }
 
   async create(item: UserCreationAttributes, transaction?: Transaction) {
-    return User.create(item, { transaction })
+    return this.Model.create(item, { transaction })
       .then((user) => user.get())
       .catch((e) => {
         if (e.name === 'SequelizeUniqueConstraintError') {
@@ -36,7 +36,10 @@ export class UserRepository extends BaseRepository<UserAttributes> {
   }
 
   async createMany(items: UserCreationAttributes[]) {
-    return this.dbConn.transaction(async (transaction) => {
+    if (!this.Model.sequelize) {
+      throw new Error('NO_CONNECTION');
+    }
+    return this.Model.sequelize.transaction(async (transaction) => {
       const opearations = items.map((item) => this.create(item, transaction));
       return Promise.all(opearations);
     });
@@ -49,7 +52,10 @@ export class UserRepository extends BaseRepository<UserAttributes> {
   }
 
   async update(id: string, item: UserCreationAttributes) {
-    return this.dbConn.transaction(async (transaction) => {
+    if (!this.Model.sequelize) {
+      throw new Error('NO_CONNECTION');
+    }
+    return this.Model.sequelize.transaction(async (transaction) => {
       const user = await User.findByPk(id);
 
       if (!user) {

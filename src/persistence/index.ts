@@ -1,20 +1,23 @@
 import { injectable } from 'inversify';
 import { Sequelize } from 'sequelize';
 
-import { InitUserModel } from '../models/User';
-
 @injectable()
 export class PersistenceManager {
-  private _conn?: Sequelize;
+  private readonly _conn: Sequelize;
 
-  async connect(force?: boolean) {
+  get connection() {
+    return this._conn;
+  }
+
+  constructor() {
     // TODO: CONFIG + LOG
-    const sequelize = new Sequelize(process.env.PG_CONN_STR as string, {
+    this._conn = new Sequelize(process.env.PG_CONN_STR as string, {
       pool: { max: 3 },
     });
-    InitUserModel(sequelize);
-    this._conn = await sequelize.sync({ force });
-    return this._conn;
+  }
+
+  async connect(force?: boolean) {
+    return this._conn.sync({ force });
   }
 
   async close() {

@@ -7,6 +7,8 @@ import { UserRepository } from 'src/data-access/user.repository';
 import { PersistenceManager } from 'src/persistence';
 import { ValidationErrorMiddleware } from 'src/middlewares/validation-errors.middleware';
 
+import { InitUserModel } from 'src/models/User';
+
 export async function initContainer(persistanceConnectForce?: boolean) {
   const container = new Container({
     skipBaseClassChecks: true,
@@ -19,12 +21,14 @@ export async function initContainer(persistanceConnectForce?: boolean) {
     .to(ValidationErrorMiddleware);
   container.bind(TOKENS.UserService).to(UserService);
 
+  // persistance and models
   const persistance = container.get<PersistenceManager>(
     TOKENS.PersistenceManager,
   );
-  const conn = await persistance.connect(persistanceConnectForce);
-
-  container.bind(TOKENS.Persistence).toConstantValue(conn);
+  const conn = persistance.connection;
+  container.bind(TOKENS.UserModel).toConstantValue(InitUserModel(conn));
+  await persistance.connect(persistanceConnectForce);
+  // ----------------------
 
   const UserRepo = process.env.MOCK_USERS_DB
     ? MockUserRepository
