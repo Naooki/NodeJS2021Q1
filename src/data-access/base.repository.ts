@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-nocheck
 import { DBRead } from 'src/data-access/DBRead';
 import { DBWrite } from 'src/data-access/DBWrite';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';

@@ -55,7 +55,7 @@ export class UserRepository extends BaseRepository<UserAttributes> {
     if (!this.Model.sequelize) {
       throw new Error('NO_CONNECTION');
     }
-    return this.Model.sequelize.transaction(async (transaction) => {
+    return this.Model.sequelize.transaction(async () => {
       const user = await User.findByPk(id);
 
       if (!user) {
