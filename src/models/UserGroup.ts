@@ -5,8 +5,8 @@ import { User } from './User';
 
 export interface UserGroupAttributes {
   id: string;
-  userId: string;
-  groupId: string;
+  UserId: string;
+  GroupId: string;
 }
 
 export class UserGroup extends Model<
@@ -22,14 +22,14 @@ export const InitUserGroupModel = (sequelize: Sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      userId: {
+      UserId: {
         type: DataTypes.UUID,
         references: {
           model: User,
           key: 'id',
         },
       },
-      groupId: {
+      GroupId: {
         type: DataTypes.UUID,
         references: {
           model: Group,
