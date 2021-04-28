@@ -1,4 +1,10 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  DataTypes,
+  HasManyAddAssociationMixin,
+  Model,
+  Sequelize,
+} from 'sequelize';
+import { User } from './User';
 
 export enum Permission {
   READ = 'READ',
@@ -16,7 +22,14 @@ export interface GroupAttributes {
 
 export interface GroupCreationAttributes extends Omit<GroupAttributes, 'id'> {}
 
-export class Group extends Model<GroupAttributes, GroupCreationAttributes> {}
+export class Group
+  extends Model<GroupAttributes, GroupCreationAttributes>
+  implements GroupAttributes {
+  id!: string;
+  name!: string;
+  permissions!: Permission[];
+  addUsers!: HasManyAddAssociationMixin<User[], number>;
+}
 
 export const InitGroupModel = (sequelize: Sequelize) =>
   Group.init(

@@ -7,16 +7,20 @@ import {
   GroupCreationAttributes,
   GroupAttributes,
 } from 'src/models/Group';
+import { User } from 'src/models/User';
 import { BaseRepository } from './base.repository';
 
 @injectable()
 export class GroupRepository extends BaseRepository<GroupAttributes> {
-  constructor(@inject(TOKENS.GroupModel) private Model: typeof Group) {
+  constructor(
+    @inject(TOKENS.GroupModel) private GroupModel: typeof Group,
+    @inject(TOKENS.UserModel) private UserModel: typeof User,
+  ) {
     super();
   }
 
   async create(item: GroupCreationAttributes, transaction?: Transaction) {
-    return this.Model.create(item, { transaction })
+    return this.GroupModel.create(item, { transaction })
       .then((group) => group.get())
       .catch((e) => {
         if (e.name === 'SequelizeUniqueConstraintError') {
@@ -36,27 +40,27 @@ export class GroupRepository extends BaseRepository<GroupAttributes> {
   }
 
   async createMany(items: GroupCreationAttributes[]) {
-    if (!this.Model.sequelize) {
+    if (!this.GroupModel.sequelize) {
       throw new Error('NO_CONNECTION');
     }
-    return this.Model.sequelize.transaction(async (transaction) => {
+    return this.GroupModel.sequelize.transaction(async (transaction) => {
       const opearations = items.map((item) => this.create(item, transaction));
       return Promise.all(opearations);
     });
   }
 
   async find(): Promise<GroupAttributes[]> {
-    return this.Model.findAll().then((groups) =>
+    return this.GroupModel.findAll().then((groups) =>
       groups.map((item) => item.get()),
     );
   }
 
   async update(id: string, itemData: GroupCreationAttributes) {
-    if (!this.Model.sequelize) {
+    if (!this.GroupModel.sequelize) {
       throw new Error('NO_CONNECTION');
     }
-    return this.Model.sequelize.transaction(async () => {
-      const item = await this.Model.findByPk(id);
+    return this.GroupModel.sequelize.transaction(async () => {
+      const item = await this.GroupModel.findByPk(id);
 
       if (!item) {
         throw new Error('NOT_FOUND');
@@ -74,8 +78,29 @@ export class GroupRepository extends BaseRepository<GroupAttributes> {
     });
   }
 
+  async addUsersToGroup(groupId: string, userIds: string[]) {
+    if (!this.GroupModel.sequelize) {
+      throw new Error('NO_CONNECTION');
+    }
+
+    return this.GroupModel.sequelize.transaction(async () => {
+      const group = await this.GroupModel.findByPk(groupId);
+
+      if (!group) {
+        throw new Error('NOT_FOUND');
+      }
+      const users = await this.UserModel.findAll({
+        where: {
+          id: userIds,
+        },
+      });
+
+      return group.addUsers(users);
+    });
+  }
+
   async delete(id: string) {
-    const item = await this.Model.findByPk(id);
+    const item = await this.GroupModel.findByPk(id);
 
     if (!item) {
       throw new Error('NOT_FOUND');

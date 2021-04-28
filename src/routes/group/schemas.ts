@@ -30,3 +30,9 @@ export const updateGroupSchema: JSONSchemaType<GroupAttributes> = {
   required: ['id', 'name', 'permissions'],
   additionalProperties: false,
 };
+
+export const addUsersToGroupSchema: JSONSchemaType<string[]> = {
+  type: 'array',
+  uniqueItems: true,
+  items: { type: 'string', format: 'uuid' },
+};

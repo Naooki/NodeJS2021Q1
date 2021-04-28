@@ -3,6 +3,7 @@ import {
   controller,
   httpDelete,
   httpGet,
+  httpPatch,
   httpPost,
   httpPut,
 } from 'inversify-express-utils';
@@ -11,7 +12,11 @@ import { Request, Response } from 'express';
 import { TOKENS } from 'src/infrastructure/tokens';
 import { GroupCreationAttributes } from 'src/models/Group';
 import { AjvValidatMiddleware } from 'src/middlewares/ajv-validate.middleware';
-import { createGroupSchema, updateGroupSchema } from './schemas';
+import {
+  addUsersToGroupSchema,
+  createGroupSchema,
+  updateGroupSchema,
+} from './schemas';
 import { GroupService } from 'src/services/group.service';
 
 @controller('/group')
@@ -94,6 +99,35 @@ export class GroupController {
           res.json({
             path: req.path,
             message: 'Group with this login already exists.',
+          });
+          break;
+        default:
+          res.status(500);
+          res.json({ path: req.path, message: 'Something went wrong' });
+      }
+    }
+  }
+
+  @httpPatch('/:id', AjvValidatMiddleware.getMiddleware(addUsersToGroupSchema))
+  async addUsersToGroup(req: Request, res: Response) {
+    const { id } = req.params;
+    const userIds = req.body;
+
+    try {
+      const group = await this.groupService.addUsersToGroup(id, userIds);
+      res.status(200);
+      res.json(group);
+    } catch (e) {
+      switch (e.message) {
+        case 'NOT_FOUND':
+          res.status(404);
+          res.json({ path: req.path, message: 'Group not found.' });
+          break;
+        case 'USER_NOT_FOUND':
+          res.status(400);
+          res.json({
+            path: req.path,
+            message: 'User not found.',
           });
           break;
         default:

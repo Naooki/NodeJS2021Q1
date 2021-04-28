@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import faker from 'faker';
 
 import { TOKENS } from 'src/infrastructure/tokens';
-import { BaseRepository } from 'src/data-access/base.repository';
+import { GroupRepository } from 'src/data-access/group.repository';
 import {
   GroupAttributes,
   GroupCreationAttributes,
@@ -13,7 +13,7 @@ import {
 export class GroupService {
   constructor(
     @inject(TOKENS.GroupRepository)
-    private repository: BaseRepository<GroupAttributes>,
+    private repository: GroupRepository,
   ) {}
 
   async getGroupById(id: string) {
@@ -28,12 +28,16 @@ export class GroupService {
     return this.repository.create({ name, permissions });
   }
 
-  async updateGroup(id: string, groupData: GroupCreationAttributes) {
+  async updateGroup(id: string, groupData: GroupAttributes) {
     return this.repository.update(id, groupData);
   }
 
   async deleteGroup(id: string) {
     return this.repository.delete(id);
+  }
+
+  async addUsersToGroup(id: string, userIds: string[]) {
+    return this.repository.addUsersToGroup(id, userIds);
   }
 
   async initDefaultGroups(quantity: number) {
