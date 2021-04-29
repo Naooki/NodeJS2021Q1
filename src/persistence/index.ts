@@ -1,5 +1,8 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { Sequelize } from 'sequelize';
+
+import { Config } from 'src/infrastructure/config';
+import { TOKENS } from 'src/infrastructure/tokens';
 
 @injectable()
 export class PersistenceManager {
@@ -9,9 +12,9 @@ export class PersistenceManager {
     return this._conn;
   }
 
-  constructor() {
-    // TODO: CONFIG + LOG
-    this._conn = new Sequelize(process.env.PG_CONN_STR as string, {
+  constructor(@inject(TOKENS.Config) private config: Config) {
+    // TODO: LOG
+    this._conn = new Sequelize(this.config.pgConnStr, {
       pool: { max: 3 },
     });
   }

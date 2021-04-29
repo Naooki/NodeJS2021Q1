@@ -1,4 +1,5 @@
 const TOKENS = {
+  Config: Symbol.for('Config'),
   PersistenceManager: Symbol.for('PersistenceManager'),
   UserModel: Symbol.for('UserModel'),
   GroupModel: Symbol.for('GroupModel'),

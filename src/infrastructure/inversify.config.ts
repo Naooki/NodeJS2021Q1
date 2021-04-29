@@ -1,6 +1,7 @@
 import { Container } from 'inversify';
 
 import { TOKENS } from './tokens';
+import { Config } from './config';
 import { UserService } from 'src/services/user.service';
 import { GroupService } from 'src/services/group.service';
 import { MockUserRepository } from 'src/data-access/mock-user.repository';
@@ -19,6 +20,7 @@ export async function initContainer(persistanceConnectForce?: boolean) {
     defaultScope: 'Singleton',
   });
 
+  container.bind(TOKENS.Config).to(Config);
   container.bind(TOKENS.PersistenceManager).to(PersistenceManager);
   container
     .bind(TOKENS.ValidationErrorMiddleware)
