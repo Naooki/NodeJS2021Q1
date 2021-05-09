@@ -1,4 +1,6 @@
 const TOKENS = {
+  Logger: Symbol.for('Logger'),
+  LoggerMiddleware: Symbol.for('LoggerMiddleware'),
   Config: Symbol.for('Config'),
   PersistenceManager: Symbol.for('PersistenceManager'),
   UserModel: Symbol.for('UserModel'),

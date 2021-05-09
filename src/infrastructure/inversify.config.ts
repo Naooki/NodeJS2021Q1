@@ -2,6 +2,8 @@ import { Container } from 'inversify';
 
 import { TOKENS } from './tokens';
 import { Config } from './config';
+import { Logger } from './logger';
+import { LoggerMiddleware } from 'src/middlewares/logger.middleware';
 import { UserService } from 'src/services/user.service';
 import { GroupService } from 'src/services/group.service';
 import { MockUserRepository } from 'src/data-access/mock-user.repository';
@@ -20,13 +22,20 @@ export async function initContainer(persistanceConnectForce?: boolean) {
     defaultScope: 'Singleton',
   });
 
-  container.bind(TOKENS.Config).to(Config);
-  container.bind(TOKENS.PersistenceManager).to(PersistenceManager);
+  // middlewares
+  container.bind(TOKENS.LoggerMiddleware).to(LoggerMiddleware);
   container
     .bind(TOKENS.ValidationErrorMiddleware)
     .to(ValidationErrorMiddleware);
+  // ----------------------
+
+  // services
+  container.bind(TOKENS.Config).to(Config);
+  container.bind(TOKENS.Logger).to(Logger);
+  container.bind(TOKENS.PersistenceManager).to(PersistenceManager);
   container.bind(TOKENS.UserService).to(UserService);
   container.bind(TOKENS.GroupService).to(GroupService);
+  // ----------------------
 
   // persistance and models
   const persistance = container.get<PersistenceManager>(

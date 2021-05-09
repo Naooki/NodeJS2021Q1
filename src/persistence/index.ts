@@ -1,8 +1,9 @@
 import { inject, injectable } from 'inversify';
 import { Sequelize } from 'sequelize';
 
-import { Config } from 'src/infrastructure/config';
 import { TOKENS } from 'src/infrastructure/tokens';
+import { Config } from 'src/infrastructure/config';
+import { Logger } from 'src/infrastructure/logger';
 
 @injectable()
 export class PersistenceManager {
@@ -12,10 +13,20 @@ export class PersistenceManager {
     return this._conn;
   }
 
-  constructor(@inject(TOKENS.Config) private config: Config) {
-    // TODO: LOG
+  constructor(
+    @inject(TOKENS.Config) private config: Config,
+    @inject(TOKENS.Logger) private logger: Logger,
+  ) {
+    this.logger.log({
+      level: 'info',
+      message: `Connecting to: ${this.config.pgConnStr}`,
+    });
     this._conn = new Sequelize(this.config.pgConnStr, {
       pool: { max: 3 },
+      logging:
+        this.config.logLevel === 'debug'
+          ? (message) => this.logger.log({ level: 'debug', message })
+          : false,
     });
   }
 
@@ -24,7 +35,7 @@ export class PersistenceManager {
   }
 
   async close() {
-    // TODO: LOG
+    this.logger.log({ level: 'info', message: 'Closing the DB connection...' });
     if (this._conn) {
       return this._conn.close();
     }
