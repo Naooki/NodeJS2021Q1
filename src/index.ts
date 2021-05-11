@@ -23,7 +23,7 @@ initContainer().then((container) => {
         .forEach((handler) => app.use(handler));
     })
     .setErrorConfig((app) => {
-      [TOKENS.ValidationErrorMiddleware]
+      [TOKENS.ValidationErrorMiddleware, TOKENS.UnhandledErrorMiddleware]
         .map((token) => container.get<BaseMiddleware>(token))
         .map((mw) => mw.handler.bind(mw))
         .forEach((handler) => app.use(handler));

@@ -7,7 +7,7 @@ import {
   httpPost,
   httpPut,
 } from 'inversify-express-utils';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { TOKENS } from 'src/infrastructure/tokens';
 import { GroupCreationAttributes } from 'src/models/Group';
@@ -27,38 +27,27 @@ export class GroupController {
 
   @httpGet('/')
   async getGroups(req: Request, res: Response) {
-    try {
-      const result = await this.groupService.getAllGroups();
-      res.status(200);
-      res.json(result);
-    } catch (e) {
-      res.status(500);
-      console.log(e);
-      res.json({ path: req.path, message: 'Something went wrong' });
-    }
+    const result = await this.groupService.getAllGroups();
+    res.status(200);
+    res.json(result);
   }
 
   @httpGet('/:id')
   async getGroup(req: Request, res: Response) {
     const { id } = req.params;
-    try {
-      const group = await this.groupService.getGroupById(id);
+    const group = await this.groupService.getGroupById(id);
 
-      if (group) {
-        res.status(200);
-        res.json(group);
-      } else {
-        res.status(404);
-        res.json({ path: req.path, message: 'Group not found.' });
-      }
-    } catch (e) {
-      res.status(500);
-      res.json({ path: req.path, message: 'Something went wrong' });
+    if (group) {
+      res.status(200);
+      res.json(group);
+    } else {
+      res.status(404);
+      res.json({ path: req.path, message: 'Group not found.' });
     }
   }
 
   @httpPost('/', AjvValidatMiddleware.getMiddleware(createGroupSchema))
-  async createGroup(req: Request, res: Response) {
+  async createGroup(req: Request, res: Response, next: NextFunction) {
     const groupData = req.body as GroupCreationAttributes;
 
     try {
@@ -74,13 +63,12 @@ export class GroupController {
         });
         return;
       }
-      res.status(500);
-      res.json({ path: req.path, message: 'Something went wrong' });
+      next(e);
     }
   }
 
   @httpPut('/:id', AjvValidatMiddleware.getMiddleware(updateGroupSchema))
-  async updateGroup(req: Request, res: Response) {
+  async updateGroup(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     const groupData = req.body;
 
@@ -102,14 +90,13 @@ export class GroupController {
           });
           break;
         default:
-          res.status(500);
-          res.json({ path: req.path, message: 'Something went wrong' });
+          next(e);
       }
     }
   }
 
   @httpPatch('/:id', AjvValidatMiddleware.getMiddleware(addUsersToGroupSchema))
-  async addUsersToGroup(req: Request, res: Response) {
+  async addUsersToGroup(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     const userIds = req.body;
 
@@ -131,14 +118,13 @@ export class GroupController {
           });
           break;
         default:
-          res.status(500);
-          res.json({ path: req.path, message: 'Something went wrong' });
+          next(e);
       }
     }
   }
 
   @httpDelete('/:id')
-  async deleteGroup(req: Request, res: Response) {
+  async deleteGroup(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     try {
       await this.groupService.deleteGroup(id);
@@ -152,8 +138,7 @@ export class GroupController {
         res.json({ path: req.path, message: 'Group not found.' });
         return;
       }
-      res.status(500);
-      res.json({ path: req.path, message: 'Something went wrong' });
+      next(e);
     }
   }
 }

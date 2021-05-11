@@ -6,7 +6,7 @@ import {
   httpPost,
   httpPut,
 } from 'inversify-express-utils';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { TOKENS } from 'src/infrastructure/tokens';
 import { UserCreationAttributes } from 'src/models/User';
@@ -25,37 +25,27 @@ export class UserController {
       limit: +(req.query.limit as string),
     };
 
-    try {
-      const result = await this.userService.getUsers(params);
-      res.status(200);
-      res.json(result);
-    } catch (e) {
-      res.status(500);
-      res.json({ path: req.path, message: 'Something went wrong' });
-    }
+    const result = await this.userService.getUsers(params);
+    res.status(200);
+    res.json(result);
   }
 
   @httpGet('/:id')
   async getUser(req: Request, res: Response) {
     const { id } = req.params;
-    try {
-      const user = await this.userService.getUserById(id);
+    const user = await this.userService.getUserById(id);
 
-      if (user) {
-        res.status(200);
-        res.json(user);
-      } else {
-        res.status(404);
-        res.json({ path: req.path, message: 'User not found.' });
-      }
-    } catch (e) {
-      res.status(500);
-      res.json({ path: req.path, message: 'Something went wrong' });
+    if (user) {
+      res.status(200);
+      res.json(user);
+    } else {
+      res.status(404);
+      res.json({ path: req.path, message: 'User not found.' });
     }
   }
 
   @httpPost('/', AjvValidatMiddleware.getMiddleware(createUserSchema))
-  async createUser(req: Request, res: Response) {
+  async createUser(req: Request, res: Response, next: NextFunction) {
     const userData = req.body as UserCreationAttributes;
 
     try {
@@ -71,13 +61,12 @@ export class UserController {
         });
         return;
       }
-      res.status(500);
-      res.json({ path: req.path, message: 'Something went wrong' });
+      next(e);
     }
   }
 
   @httpPut('/:id', AjvValidatMiddleware.getMiddleware(updateUserSchema))
-  async updateUser(req: Request, res: Response) {
+  async updateUser(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     const userData = req.body;
 
@@ -99,14 +88,13 @@ export class UserController {
           });
           break;
         default:
-          res.status(500);
-          res.json({ path: req.path, message: 'Something went wrong' });
+          next(e);
       }
     }
   }
 
   @httpDelete('/:id')
-  async deleteUser(req: Request, res: Response) {
+  async deleteUser(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     try {
       await this.userService.deleteUser(id);
@@ -120,8 +108,7 @@ export class UserController {
         res.json({ path: req.path, message: 'User not found.' });
         return;
       }
-      res.status(500);
-      res.json({ path: req.path, message: 'Something went wrong' });
+      next(e);
     }
   }
 }
