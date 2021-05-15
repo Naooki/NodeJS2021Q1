@@ -11,6 +11,7 @@ const TOKENS = {
   GroupRepository: Symbol.for('GroupRepository'),
   ValidationErrorMiddleware: Symbol.for('ValidationErrorMiddleware'),
   UnhandledErrorMiddleware: Symbol.for('UnhandledErrorMiddleware'),
+  ExecutionTimeMiddleware: Symbol.for('ExecutionTimeMiddleware'),
 };
 
 export { TOKENS };

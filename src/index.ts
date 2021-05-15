@@ -22,7 +22,7 @@ initContainer().then((container) => {
   server
     .setConfig((app) => {
       app.use(express.json());
-      [TOKENS.LoggerMiddleware]
+      [TOKENS.LoggerMiddleware, TOKENS.ExecutionTimeMiddleware]
         .map((token) => container.get<BaseMiddleware>(token))
         .map((mw) => mw.handler.bind(mw))
         .forEach((handler) => app.use(handler));

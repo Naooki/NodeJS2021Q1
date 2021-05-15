@@ -12,6 +12,7 @@ import { GroupRepository } from 'src/data-access/group.repository';
 import { PersistenceManager } from 'src/persistence';
 import { ValidationErrorMiddleware } from 'src/middlewares/validation-errors.middleware';
 import { UnhandledErrorMiddleware } from 'src/middlewares/unhandled-errors.middleware';
+import { ExecutionTimeMiddleware } from 'src/middlewares/execution-time.middleware';
 
 import { InitUserModel } from 'src/models/User';
 import { InitGroupModel } from 'src/models/Group';
@@ -29,6 +30,7 @@ export async function initContainer(persistanceConnectForce?: boolean) {
     .bind(TOKENS.ValidationErrorMiddleware)
     .to(ValidationErrorMiddleware);
   container.bind(TOKENS.UnhandledErrorMiddleware).to(UnhandledErrorMiddleware);
+  container.bind(TOKENS.ExecutionTimeMiddleware).to(ExecutionTimeMiddleware);
   // ----------------------
 
   // services
