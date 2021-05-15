@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
+import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export interface UserAttributes {
   id: string;
@@ -8,9 +8,8 @@ export interface UserAttributes {
   isDeleted: boolean;
 }
 
-// TODO: Delegate ID generation logic to the Data Source
 export interface UserCreationAttributes
-  extends Optional<UserAttributes, 'isDeleted'> {}
+  extends Omit<UserAttributes, 'isDeleted' | 'id'> {}
 
 export class User extends Model<UserAttributes, UserCreationAttributes> {}
 
@@ -19,6 +18,7 @@ export const InitUserModel = (sequelize: Sequelize) =>
     {
       id: {
         type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
       login: {

@@ -3,10 +3,11 @@ import { InversifyExpressServer } from 'inversify-express-utils';
 import express from 'express';
 
 import { initContainer } from './infrastructure/inversify.config';
-import './routes/status';
-import './routes/user';
 import { TOKENS } from './infrastructure/tokens';
 import { ValidationErrorMiddleware } from './middlewares/validation-errors.middleware';
+import './routes/status';
+import './routes/user';
+import './routes/group';
 
 initContainer().then((container) => {
   const server = new InversifyExpressServer(container);

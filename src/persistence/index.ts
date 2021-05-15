@@ -1,20 +1,26 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { Sequelize } from 'sequelize';
 
-import { InitUserModel } from '../models/User';
+import { Config } from 'src/infrastructure/config';
+import { TOKENS } from 'src/infrastructure/tokens';
 
 @injectable()
 export class PersistenceManager {
-  private _conn?: Sequelize;
+  private readonly _conn: Sequelize;
 
-  async connect(force?: boolean) {
-    // TODO: CONFIG + LOG
-    const sequelize = new Sequelize(process.env.PG_CONN_STR as string, {
+  get connection() {
+    return this._conn;
+  }
+
+  constructor(@inject(TOKENS.Config) private config: Config) {
+    // TODO: LOG
+    this._conn = new Sequelize(this.config.pgConnStr, {
       pool: { max: 3 },
     });
-    InitUserModel(sequelize);
-    this._conn = await sequelize.sync({ force });
-    return this._conn;
+  }
+
+  async connect(force?: boolean) {
+    return this._conn.sync({ force });
   }
 
   async close() {

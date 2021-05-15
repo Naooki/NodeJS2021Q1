@@ -34,8 +34,7 @@ export class UserService {
   }
 
   async createUser({ login, password, age }: UserCreationAttributes) {
-    const id = faker.random.uuid();
-    return this.repository.create({ id, login, password, age });
+    return this.repository.create({ login, password, age });
   }
 
   async updateUser(id: string, userData: UserCreationAttributes) {
@@ -47,10 +46,9 @@ export class UserService {
   }
 
   async initDefaultUsers(quantity: number) {
-    const usersData = new Array(100).fill(null).map(
+    const usersData = new Array(quantity).fill(null).map(
       () =>
         ({
-          id: faker.random.uuid(),
           login: faker.internet.userName(),
           password: faker.random.alphaNumeric(8),
           age: faker.random.number({ min: 4, max: 130 }),

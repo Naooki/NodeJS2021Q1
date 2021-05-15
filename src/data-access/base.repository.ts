@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-nocheck
 import { DBRead } from 'src/data-access/DBRead';
 import { DBWrite } from 'src/data-access/DBWrite';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
@@ -19,7 +21,7 @@ export abstract class BaseRepository<T> implements DBWrite<T>, DBRead<T> {
     throw new Error('Method not implemented.');
   }
 
-  async find<K>(param: ListSearchParams<T, K>): Promise<T[]> {
+  async find<K>(param?: ListSearchParams<T, K>): Promise<T[]> {
     throw new Error('Method not implemented.');
   }
 

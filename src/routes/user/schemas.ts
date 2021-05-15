@@ -20,11 +20,10 @@ export const createUserSchema: JSONSchemaType<
   additionalProperties: false,
 };
 
-export const patchUserSchema: JSONSchemaType<
-  Omit<UserAttributes, 'id' | 'isDeleted'>
-> = {
+export const updateUserSchema: JSONSchemaType<UserAttributes> = {
   type: 'object',
   properties: {
+    id: { type: 'string', format: 'uuid' },
     login: { type: 'string' },
     password: {
       type: 'string',
@@ -33,8 +32,9 @@ export const patchUserSchema: JSONSchemaType<
       pattern: '^(?=.*[a-zA-Z])(?=.*[0-9])',
     },
     age: { type: 'number', minimum: 4, maximum: 130 },
+    isDeleted: { type: 'boolean' },
   },
   minProperties: 1,
-  required: [],
+  required: ['id', 'login', 'password', 'age', 'isDeleted'],
   additionalProperties: false,
 };

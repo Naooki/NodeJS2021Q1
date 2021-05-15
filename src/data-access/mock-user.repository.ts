@@ -1,3 +1,5 @@
+import faker from 'faker';
+
 import { BaseRepository } from './base.repository';
 import { UserCreationAttributes, UserAttributes } from '../models/User';
 import { ListSearchParams } from '../interfaces/ListSearchParams';
@@ -6,7 +8,7 @@ export class MockUserRepository extends BaseRepository<UserAttributes> {
   private _usersData: UserAttributes[] = [];
 
   async create(item: UserCreationAttributes) {
-    const user = { ...item, isDeleted: false };
+    const user = { ...item, id: faker.random.uuid(), isDeleted: false };
     this._usersData.push(user);
     return user;
   }
@@ -70,6 +72,7 @@ export class MockUserRepository extends BaseRepository<UserAttributes> {
   createMany(usersData: UserCreationAttributes[]): Promise<UserAttributes[]> {
     this._usersData = usersData.map((userData) => ({
       ...userData,
+      id: faker.random.uuid(),
       isDeleted: false,
     }));
     return Promise.resolve(this._usersData);

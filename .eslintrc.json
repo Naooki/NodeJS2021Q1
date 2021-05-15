@@ -11,6 +11,7 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "@typescript-eslint/no-unused-vars": "error",
     "comma-dangle": ["error", "always-multiline"],
     "semi": ["error", "always"],
     "space-before-function-paren": "off",

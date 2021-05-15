@@ -3,8 +3,8 @@ import {
   controller,
   httpDelete,
   httpGet,
-  httpPatch,
   httpPost,
+  httpPut,
 } from 'inversify-express-utils';
 import { Request, Response } from 'express';
 
@@ -12,7 +12,7 @@ import { TOKENS } from 'src/infrastructure/tokens';
 import { UserCreationAttributes } from 'src/models/User';
 import { UserService } from 'src/services/user.service';
 import { AjvValidatMiddleware } from 'src/middlewares/ajv-validate.middleware';
-import { createUserSchema, patchUserSchema } from './schemas';
+import { createUserSchema, updateUserSchema } from './schemas';
 
 @controller('/user')
 export class UserController {
@@ -54,7 +54,7 @@ export class UserController {
     }
   }
 
-  @httpPost('/create', AjvValidatMiddleware.getMiddleware(createUserSchema))
+  @httpPost('/', AjvValidatMiddleware.getMiddleware(createUserSchema))
   async createUser(req: Request, res: Response) {
     const userData = req.body as UserCreationAttributes;
 
@@ -76,8 +76,8 @@ export class UserController {
     }
   }
 
-  @httpPatch('/:id', AjvValidatMiddleware.getMiddleware(patchUserSchema))
-  async patchUser(req: Request, res: Response) {
+  @httpPut('/:id', AjvValidatMiddleware.getMiddleware(updateUserSchema))
+  async updateUser(req: Request, res: Response) {
     const { id } = req.params;
     const userData = req.body;
 

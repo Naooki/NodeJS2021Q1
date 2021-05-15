@@ -1,8 +1,12 @@
 const TOKENS = {
+  Config: Symbol.for('Config'),
   PersistenceManager: Symbol.for('PersistenceManager'),
-  Persistence: Symbol.for('Persistence'),
+  UserModel: Symbol.for('UserModel'),
+  GroupModel: Symbol.for('GroupModel'),
   UserService: Symbol.for('UserService'),
+  GroupService: Symbol.for('GroupService'),
   UserRepository: Symbol.for('UserRepository'),
+  GroupRepository: Symbol.for('GroupRepository'),
   ValidationErrorMiddleware: Symbol.for('ValidationErrorMiddleware'),
 };
 
