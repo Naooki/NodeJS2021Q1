@@ -15,7 +15,7 @@ import { UserService } from 'src/services/user.service';
 import { AjvValidatMiddleware } from 'src/middlewares/ajv-validate.middleware';
 import { createUserSchema, updateUserSchema } from './schemas';
 
-@controller('/user')
+@controller('/user', TOKENS.AuthMiddleware)
 export class UserController {
   constructor(
     @inject(TOKENS.UserService) private readonly userService: UserService,

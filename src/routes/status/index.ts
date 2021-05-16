@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { controller, httpGet } from 'inversify-express-utils';
 
-@controller('')
+import { TOKENS } from 'src/infrastructure/tokens';
+
+@controller('', TOKENS.AuthMiddleware)
 export class StatusController {
   @httpGet('/')
   getUsers(req: Request, res: Response) {
