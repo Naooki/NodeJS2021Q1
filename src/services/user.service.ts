@@ -5,6 +5,7 @@ import { TOKENS } from 'src/infrastructure/tokens';
 import { BaseRepository } from 'src/data-access/base.repository';
 import { ListSearchParams } from 'src/interfaces/ListSearchParams';
 import { UserAttributes, UserCreationAttributes } from 'src/models/User';
+import { hash } from 'src/utils';
 
 @injectable()
 export class UserService {
@@ -34,10 +35,14 @@ export class UserService {
   }
 
   async createUser({ login, password, age }: UserCreationAttributes) {
-    return this.repository.create({ login, password, age });
+    const passwordHash = await hash(password);
+    return this.repository.create({ login, password: passwordHash, age });
   }
 
   async updateUser(id: string, userData: UserCreationAttributes) {
+    if (userData.password) {
+      userData.password = await hash(userData.password);
+    }
     return this.repository.update(id, userData);
   }
 
@@ -46,14 +51,19 @@ export class UserService {
   }
 
   async initDefaultUsers(quantity: number) {
-    const usersData = new Array(quantity).fill(null).map(
-      () =>
-        ({
-          login: faker.internet.userName(),
-          password: faker.random.alphaNumeric(8),
-          age: faker.random.number({ min: 4, max: 130 }),
-        } as UserCreationAttributes),
-    );
+    const promises = new Array(quantity)
+      .fill(null)
+      .map(() => this.initMockUser());
+    const usersData = await Promise.all(promises);
     return this.repository.createMany(usersData);
+  }
+
+  private async initMockUser(): Promise<UserCreationAttributes> {
+    const password = await hash(faker.random.alphaNumeric(8));
+    return {
+      login: faker.internet.userName(),
+      password,
+      age: faker.random.number({ min: 4, max: 130 }),
+    };
   }
 }

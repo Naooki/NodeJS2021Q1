@@ -4,11 +4,13 @@ import {
   BaseMiddleware,
 } from 'inversify-express-utils';
 import express from 'express';
+import cors from 'cors';
 
 import { initContainer } from './infrastructure/inversify.config';
 import { TOKENS } from './infrastructure/tokens';
 import { Logger } from './infrastructure/logger';
 import './routes/status';
+import './routes/auth';
 import './routes/user';
 import './routes/group';
 
@@ -21,6 +23,7 @@ initContainer().then((container) => {
 
   server
     .setConfig((app) => {
+      app.use(cors());
       app.use(express.json());
       [TOKENS.LoggerMiddleware, TOKENS.ExecutionTimeMiddleware]
         .map((token) => container.get<BaseMiddleware>(token))

@@ -20,7 +20,7 @@ import {
 import { GroupService } from 'src/services/group.service';
 import { Logger } from 'src/infrastructure/logger';
 
-@controller('/group')
+@controller('/group', TOKENS.AuthMiddleware)
 export class GroupController {
   constructor(
     @inject(TOKENS.GroupService) private groupService: GroupService,
