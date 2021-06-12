@@ -1,13 +1,8 @@
 import { inject, injectable } from 'inversify';
-import faker from 'faker';
 
 import { TOKENS } from 'src/infrastructure/tokens';
 import { GroupRepository } from 'src/data-access/group.repository';
-import {
-  GroupAttributes,
-  GroupCreationAttributes,
-  Permission,
-} from 'src/models/Group';
+import { GroupAttributes, GroupCreationAttributes } from 'src/models/Group';
 
 @injectable()
 export class GroupService {
@@ -40,14 +35,7 @@ export class GroupService {
     return this.repository.addUsersToGroup(id, userIds);
   }
 
-  async initDefaultGroups(quantity: number) {
-    const usersData = new Array(quantity).fill(null).map(
-      () =>
-        ({
-          name: faker.name.jobDescriptor(),
-          permissions: [faker.random.arrayElement(Object.values(Permission))],
-        } as GroupCreationAttributes),
-    );
-    return this.repository.createMany(usersData);
+  async createManyGroups(groups: GroupCreationAttributes[]) {
+    return this.repository.createMany(groups);
   }
 }

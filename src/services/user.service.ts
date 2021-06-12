@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify';
-import faker from 'faker';
 
 import { TOKENS } from 'src/infrastructure/tokens';
 import { BaseRepository } from 'src/data-access/base.repository';
@@ -50,20 +49,19 @@ export class UserService {
     return this.repository.delete(id);
   }
 
-  async initDefaultUsers(quantity: number) {
-    const promises = new Array(quantity)
-      .fill(null)
-      .map(() => this.initMockUser());
+  async createManyUsers(users: UserCreationAttributes[]) {
+    const promises = users.map((user) => this.hashUserPassword(user));
+
     const usersData = await Promise.all(promises);
     return this.repository.createMany(usersData);
   }
 
-  private async initMockUser(): Promise<UserCreationAttributes> {
-    const password = await hash(faker.random.alphaNumeric(8));
+  private async hashUserPassword(
+    userData: UserCreationAttributes,
+  ): Promise<UserCreationAttributes> {
     return {
-      login: faker.internet.userName(),
-      password,
-      age: faker.random.number({ min: 4, max: 130 }),
+      ...userData,
+      password: await hash(userData.password),
     };
   }
 }

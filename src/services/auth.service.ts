@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify';
-import { randomBytes } from 'crypto';
 import { sign, verify } from 'jsonwebtoken';
 
 import { verify as verifyPassword } from 'src/utils';
@@ -9,7 +8,7 @@ import { UserService } from './user.service';
 
 @injectable()
 export class AuthService {
-  private readonly PRIVATE_KEY = randomBytes(64).toString('hex');
+  private readonly PRIVATE_KEY = 'foobar42';
 
   constructor(
     @inject(TOKENS.UserService) private readonly userService: UserService,
@@ -35,7 +34,7 @@ export class AuthService {
 
   private getToken(payload: { login: string }) {
     return new Promise<string>((resolve, reject) => {
-      sign(payload, this.PRIVATE_KEY, { expiresIn: 30 }, (err, token) =>
+      sign(payload, this.PRIVATE_KEY, { expiresIn: 600 }, (err, token) =>
         err ? reject(err) : resolve(token as string),
       );
     });
